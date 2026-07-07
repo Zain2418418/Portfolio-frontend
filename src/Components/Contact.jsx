@@ -15,7 +15,7 @@ export default function Contact({ isDarkMode }) {
 
     try {
       // Browser ke built-in fetch se API hit ki
-     const response = await fetch(`${import.meta.env.VITE_API_URL}/api/contacts/`, {
+     const response = await fetch(`${import.meta.env.VITE_API_URL}/api/contacts`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

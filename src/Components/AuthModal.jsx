@@ -16,9 +16,9 @@ export default function AuthModal({ isOpen, onClose, isDarkMode }) {
     setStatus({ loading: true, success: '', error: '' });
 
     // Dynamic URL based on current view (Login ya Signup)
-    const apiUrl = isLoginView 
-      ? '/api/auth/login' 
-      : '/api/auth/signup';
+   const apiUrl = isLoginView 
+  ? `${import.meta.env.VITE_API_URL}/api/auth/login` 
+  : `${import.meta.env.VITE_API_URL}/api/auth/signup`;
 
     try {
       const response = await fetch(apiUrl, {
