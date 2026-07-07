@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply transition-colors duration-300;
+}
+@keyframes slideIn {
+  0% {
+    transform: translateX(-30px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* New continuous smooth floating keyframes for profile picture */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Fallback utilities for smooth animation binding */
+.animate-\[fadeInUp_0\.6s_ease-out_forwards\] {
+  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.animate-\[fadeInUp_0\.8s_ease-out_forwards\] {
+  animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Staggered delay mapping configurations */
+.delay-\[0ms\] { animation-delay: 0ms; }
+.delay-\[75ms\] { animation-delay: 75ms; }
+.delay-\[150ms\] { animation-delay: 150ms; }
+.delay-\[225ms\] { animation-delay: 225ms; }
+.delay-\[300ms\] { animation-delay: 300ms; }
+.delay-\[375ms\] { animation-delay: 375ms; }
+.delay-\[450ms\] { animation-delay: 450ms; }
+.delay-\[525ms\] { animation-delay: 525ms; }
