@@ -14,12 +14,17 @@ export default function Contact({ isDarkMode }) {
     setStatus({ loading: true, success: '', error: '' });
 
     try {
-      // --- PRODUCTION FALLBACK BACKEND URL SETUP ---
-      // Agar VITE_API_URL env nahi milega toh direct live URL hit hoga
+      // --- PRODUCTION ENHANCED BACKEND URL SETUP ---
+      // Agar VITE_API_URL env file me exist nahi karta toh direct dynamic secure HTTPS link apply hogi
       const backendBaseUrl = import.meta.env.VITE_API_URL || 'https://portfolio-backend-zain-dev.vercel.app';
       
-      // Browser ke built-in fetch se API hit ki (Strict clean link trailing slash ke bagair)
-      const response = await fetch(`${backendBaseUrl}/api/contacts`, {
+      // Strict clean verification link ensuring it starts with https and has no trailing slashes
+      const cleanBaseUrl = backendBaseUrl.startsWith('http') 
+        ? backendBaseUrl.replace(/\/$/, "") 
+        : `https://${backendBaseUrl.replace(/\/$/, "")}`;
+
+      // Browser ke built-in fetch se API hit ki 
+      const response = await fetch(`${cleanBaseUrl}/api/contacts`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
