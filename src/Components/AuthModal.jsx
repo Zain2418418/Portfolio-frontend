@@ -15,10 +15,14 @@ export default function AuthModal({ isOpen, onClose, isDarkMode }) {
     e.preventDefault();
     setStatus({ loading: true, success: '', error: '' });
 
-    // Dynamic URL based on current view (Login ya Signup)
-   const apiUrl = isLoginView 
-  ? `${import.meta.env.VITE_API_URL}/api/auth/login` 
-  : `${import.meta.env.VITE_API_URL}/api/auth/signup`;
+    // --- PRODUCTION FALLBACK BACKEND URL SETUP ---
+    // Agar VITE_API_URL env nahi milega toh direct live URL hit hoga
+    const backendBaseUrl = import.meta.env.VITE_API_URL || 'https://portfolio-backend-zain-dev.vercel.app';
+
+    // Dynamic URL based on current view (Login ya Signup) - Strict clean endpoints without trailing slashes
+    const apiUrl = isLoginView 
+      ? `${backendBaseUrl}/api/auth/login` 
+      : `${backendBaseUrl}/api/auth/signup`;
 
     try {
       const response = await fetch(apiUrl, {

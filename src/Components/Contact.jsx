@@ -14,8 +14,12 @@ export default function Contact({ isDarkMode }) {
     setStatus({ loading: true, success: '', error: '' });
 
     try {
-      // Browser ke built-in fetch se API hit ki
-     const response = await fetch(`${import.meta.env.VITE_API_URL}/api/contacts`, {
+      // --- PRODUCTION FALLBACK BACKEND URL SETUP ---
+      // Agar VITE_API_URL env nahi milega toh direct live URL hit hoga
+      const backendBaseUrl = import.meta.env.VITE_API_URL || 'https://portfolio-backend-zain-dev.vercel.app';
+      
+      // Browser ke built-in fetch se API hit ki (Strict clean link trailing slash ke bagair)
+      const response = await fetch(`${backendBaseUrl}/api/contacts`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -38,7 +42,7 @@ export default function Contact({ isDarkMode }) {
       setStatus({ 
         loading: false, 
         success: '', 
-        error: 'Server connection failed! Please make sure your Node.js backend is running on port 5000.' 
+        error: 'Server connection failed! Please make sure your Node.js backend is running properly.' 
       });
     }
   };
