@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 
 export default function AuthModal({ isOpen, onClose, isDarkMode }) {
-  const [isLoginView, setIsLoginView] = useState(true); // Toggle between Login and Signup
+  const [isLoginView, setIsLoginView] = useState(true); 
   const [formData, setFormData] = useState({ name: '', email: '', password: '' });
   const [status, setStatus] = useState({ loading: false, success: '', error: '' });
 
-  if (!isOpen) return null; // Agar modal open nahi hai to kuch render nahi hoga
+  if (!isOpen) return null; 
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -15,27 +15,29 @@ export default function AuthModal({ isOpen, onClose, isDarkMode }) {
     e.preventDefault();
     setStatus({ loading: true, success: '', error: '' });
 
-    // --- PRODUCTION ENHANCED BACKEND URL SETUP ---
-    // Agar VITE_API_URL env file me exist nahi karta toh direct dynamic secure HTTPS link apply hogi
     const backendBaseUrl = import.meta.env.VITE_API_URL || 'https://portfolio-backend-zain-dev.vercel.app';
 
-    // Auto cleaning URL configuration ensuring it starts with https and has no trailing slashes
     const cleanBaseUrl = backendBaseUrl.startsWith('http') 
       ? backendBaseUrl.replace(/\/$/, "") 
       : `https://${backendBaseUrl.replace(/\/$/, "")}`;
 
-    // Dynamic URL based on current view (Login ya Signup)
     const apiUrl = isLoginView 
       ? `${cleanBaseUrl}/api/auth/login` 
       : `${cleanBaseUrl}/api/auth/signup`;
+
+    // --- FIX: Send ONLY the required fields to prevent backend validation breakdown ---
+    const payload = isLoginView 
+      ? { email: formData.email.trim(), password: formData.password }
+      : { name: formData.name.trim(), email: formData.email.trim(), password: formData.password };
 
     try {
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json'
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload), // clean dataset sent
       });
 
       const data = await response.json();
@@ -43,8 +45,9 @@ export default function AuthModal({ isOpen, onClose, isDarkMode }) {
       if (data.success) {
         if (isLoginView) {
           setStatus({ loading: false, success: 'Welcome back! Login Successful. 🎉', error: '' });
+          setFormData({ name: '', email: '', password: '' });
           setTimeout(() => {
-            onClose(); // 1.5s baad modal auto-close ho jayega
+            onClose(); 
           }, 1500);
         } else {
           setStatus({ 
@@ -52,7 +55,7 @@ export default function AuthModal({ isOpen, onClose, isDarkMode }) {
             success: 'Registration successful! Please check your Ethereal inbox to verify your email. ✉️', 
             error: '' 
           });
-          setFormData({ name: '', email: '', password: '' }); // Form clear
+          setFormData({ name: '', email: '', password: '' }); 
         }
       } else {
         setStatus({ loading: false, success: '', error: data.error || 'Authentication failed.' });
@@ -65,12 +68,10 @@ export default function AuthModal({ isOpen, onClose, isDarkMode }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]">
-      {/* Modal Box */}
       <div className={`relative w-full max-w-md p-6 sm:p-8 rounded-[2rem] border-2 shadow-2xl transition-all duration-300 font-sans ${
         isDarkMode ? 'bg-[#1a3f35] border-stone-700 text-[#fbf9f4]' : 'bg-white border-[#14342b]/80 text-[#14342b]'
       }`}>
         
-        {/* Close Button */}
         <button 
           onClick={onClose}
           className={`absolute top-5 right-5 p-1.5 rounded-full transition-colors ${
@@ -82,7 +83,6 @@ export default function AuthModal({ isOpen, onClose, isDarkMode }) {
           </svg>
         </button>
 
-        {/* Modal Title */}
         <h3 className="font-serif text-3xl font-bold tracking-tight mb-2 text-center">
           {isLoginView ? 'Welcome Back' : 'Create Account'}<span className="text-amber-600">.</span>
         </h3>
@@ -90,10 +90,7 @@ export default function AuthModal({ isOpen, onClose, isDarkMode }) {
           {isLoginView ? 'Sign in to access your dashboard' : 'Register to get full-stack portal access'}
         </p>
 
-        {/* Auth Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
-          
-          {/* Name Field - Only visible on Signup View */}
           {!isLoginView && (
             <div className="space-y-1">
               <label className="text-[10px] font-bold uppercase tracking-wider">Full Name</label>
@@ -111,7 +108,6 @@ export default function AuthModal({ isOpen, onClose, isDarkMode }) {
             </div>
           )}
 
-          {/* Email Field */}
           <div className="space-y-1">
             <label className="text-[10px] font-bold uppercase tracking-wider">Email Address</label>
             <input 
@@ -127,7 +123,6 @@ export default function AuthModal({ isOpen, onClose, isDarkMode }) {
             />
           </div>
 
-          {/* Password Field */}
           <div className="space-y-1">
             <label className="text-[10px] font-bold uppercase tracking-wider">Password</label>
             <input 
@@ -143,7 +138,6 @@ export default function AuthModal({ isOpen, onClose, isDarkMode }) {
             />
           </div>
 
-          {/* Submit Button */}
           <button 
             type="submit"
             disabled={status.loading}
@@ -159,16 +153,15 @@ export default function AuthModal({ isOpen, onClose, isDarkMode }) {
           </button>
         </form>
 
-        {/* Status Messages */}
         {status.success && <p className="text-emerald-500 text-xs font-semibold mt-4 text-center">{status.success}</p>}
         {status.error && <p className="text-rose-500 text-xs font-semibold mt-4 text-center">{status.error}</p>}
 
-        {/* Toggle View Footer */}
         <div className={`mt-6 pt-4 border-t text-xs text-center ${isDarkMode ? 'border-stone-700/60 text-stone-400' : 'border-stone-200 text-stone-500'}`}>
           {isLoginView ? "Don't have an account? " : "Already have an account? "}
           <button 
             onClick={() => {
               setIsLoginView(!isLoginView);
+              setFormData({ name: '', email: '', password: '' }); // Clear fields safely on toggle
               setStatus({ loading: false, success: '', error: '' }); 
             }}
             className="font-bold underline text-amber-600 hover:text-amber-500 transition-colors ml-1"
